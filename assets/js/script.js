@@ -3,7 +3,9 @@ var loadButtons = function () {
   var cities = JSON.parse(localStorage.getItem("buttons"));
   if (cities) {
     savedButtons = cities;
-    for(var i=0;i<savedButtons.length;i++)
+    for (var i = 0; i < savedButtons.length; i++) {
+      makeBtn(savedButtons[i], true);
+    }
   } else {
     savedButtons = [];
   }
@@ -32,7 +34,7 @@ var getWeather = function (lat, lon, city) {
   fetch(apiUrl).then(function (response) {
     response.json().then(function (data) {
       localStorage.setItem(city, JSON.stringify(data));
-      makeBtn(city);
+      makeBtn(city, false);
       displayWeather(data, city);
     });
   });
@@ -55,7 +57,7 @@ var displayWeather = function (data, city) {
     $("#hum-" + (i + 1)).text(data.daily[i].humidity + "%");
   }
 };
-var makeBtn = function (city) {
+var makeBtn = function (city, load) {
   var duplicate = false;
   $(".history-button").each(function () {
     if (city == $(this).text().trim()) {
@@ -65,11 +67,13 @@ var makeBtn = function (city) {
   });
   if (!duplicate) {
     var newBtn = $("<p>")
-      .addClass("btn btn-secondary history-button mt-2 col-12")
+      .addClass("btn btn-secondary history-button col-12 mt-1")
       .text(city);
     $(".history").append(newBtn);
-    savedButtons.push(city);
-    localStorage.setItem("buttons", JSON.stringify(savedButtons));
+    if (!load) {
+      savedButtons.push(city);
+      localStorage.setItem("buttons", JSON.stringify(savedButtons));
+    }
   }
 };
 var formSubmitHanlder = function (event) {
@@ -81,6 +85,12 @@ var formSubmitHanlder = function (event) {
     alert("please enter a city name!");
   }
   $("input").val("");
+};
+var cityButtonHandler = function (event) {
+  var city = $(this).text();
+  var data = JSON.parse(localStorage.getItem(city));
+  displayWeather(data, city);
+  getGeo(city);
 };
 var iconGetter = function (weather) {
   switch (weather) {
@@ -106,4 +116,5 @@ var iconGetter = function (weather) {
 };
 
 $(".search").on("submit", formSubmitHanlder);
+$(".history").on("click", ".history-button", cityButtonHandler);
 loadButtons();
