@@ -21,7 +21,7 @@ var getWeather = function (lat, lon, city) {
 
   fetch(apiUrl).then(function (response) {
     response.json().then(function (data) {
-      console.log(data);
+      localStorage.setItem(city, JSON.stringify(data));
       displayWeather(data, city);
     });
   });
@@ -35,6 +35,14 @@ var displayWeather = function (data, city) {
   $("#wind-0").text(data.current.wind_speed + "MPH");
   $("#hum-0").text(data.current.humidity + "%");
   $("#uv-0").text(data.current.uvi);
+  for (var i = 0; i < 5; i++) {
+    var date = new Date(data.daily[i].dt * 1000);
+    $("#date-" + (i + 1)).text(date.toLocaleDateString("en-US"));
+    $("#icon-" + (i + 1)).html(iconGetter(data.daily[i].weather[0].main));
+    $("#temp-" + (i + 1)).text(data.daily[i].temp.day + "F");
+    $("#wind-" + (i + 1)).text(data.daily[i].wind_speed + "MPH");
+    $("#hum-" + (i + 1)).text(data.daily[i].humidity + "%");
+  }
 };
 var formSubmitHanlder = function (event) {
   event.preventDefault();
