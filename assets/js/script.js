@@ -1,3 +1,13 @@
+var savedButtons = "";
+var loadButtons = function () {
+  var cities = JSON.parse(localStorage.getItem("buttons"));
+  if (cities) {
+    savedButtons = cities;
+    for(var i=0;i<savedButtons.length;i++)
+  } else {
+    savedButtons = [];
+  }
+};
 var getGeo = function (city) {
   var apiUrl =
     "http://api.openweathermap.org/geo/1.0/direct?q=" +
@@ -22,6 +32,7 @@ var getWeather = function (lat, lon, city) {
   fetch(apiUrl).then(function (response) {
     response.json().then(function (data) {
       localStorage.setItem(city, JSON.stringify(data));
+      makeBtn(city);
       displayWeather(data, city);
     });
   });
@@ -29,7 +40,7 @@ var getWeather = function (lat, lon, city) {
 var displayWeather = function (data, city) {
   var date = new Date(data.current.dt * 1000);
   $("#city-name").text(city);
-  $("#today-date").text(date.toLocaleDateString("en-US"));
+  $("#today-date").text("(" + date.toLocaleDateString("en-US") + ")");
   $("#icon-0").html(iconGetter(data.current.weather[0].main));
   $("#temp-0").text(data.current.temp + "F");
   $("#wind-0").text(data.current.wind_speed + "MPH");
@@ -42,6 +53,23 @@ var displayWeather = function (data, city) {
     $("#temp-" + (i + 1)).text(data.daily[i].temp.day + "F");
     $("#wind-" + (i + 1)).text(data.daily[i].wind_speed + "MPH");
     $("#hum-" + (i + 1)).text(data.daily[i].humidity + "%");
+  }
+};
+var makeBtn = function (city) {
+  var duplicate = false;
+  $(".history-button").each(function () {
+    if (city == $(this).text().trim()) {
+      console.log("match");
+      duplicate = true;
+    }
+  });
+  if (!duplicate) {
+    var newBtn = $("<p>")
+      .addClass("btn btn-secondary history-button mt-2 col-12")
+      .text(city);
+    $(".history").append(newBtn);
+    savedButtons.push(city);
+    localStorage.setItem("buttons", JSON.stringify(savedButtons));
   }
 };
 var formSubmitHanlder = function (event) {
@@ -78,3 +106,4 @@ var iconGetter = function (weather) {
 };
 
 $(".search").on("submit", formSubmitHanlder);
+loadButtons();
