@@ -14,7 +14,7 @@ var loadButtons = function () {
 //converts city name into coordinates, passes city name
 var getGeo = function (city) {
   var apiUrl =
-    "http://api.openweathermap.org/geo/1.0/direct?q=" +
+    "https://api.openweathermap.org/geo/1.0/direct?q=" +
     city +
     "&limit=1&appid=6faa5e3c233b64674f23b79cff53f5b6";
 
