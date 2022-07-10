@@ -15,7 +15,7 @@ var getGeo = function (city) {
     "http://api.openweathermap.org/geo/1.0/direct?q=" +
     city +
     "&limit=1&appid=6faa5e3c233b64674f23b79cff53f5b6";
-  console.log(apiUrl);
+
   fetch(apiUrl).then(function (response) {
     response.json().then(function (data) {
       var city = data[0].name;
@@ -40,6 +40,7 @@ var getWeather = function (lat, lon, city) {
   });
 };
 var displayWeather = function (data, city) {
+  $("#forecast-container").removeClass("invisible").addClass("visible");
   var date = new Date(data.current.dt * 1000);
   $("#city-name").text(city);
   $("#today-date").text("(" + date.toLocaleDateString("en-US") + ")");
@@ -48,6 +49,16 @@ var displayWeather = function (data, city) {
   $("#wind-0").text(data.current.wind_speed + "MPH");
   $("#hum-0").text(data.current.humidity + "%");
   $("#uv-0").text(data.current.uvi);
+  $("#uv-0").removeClass("bg-success bg-danger bg-warning");
+  if (data.current.uvi < 3) {
+    $("#uv-0").addClass("bg-success");
+  } else if (6 > data.current.uvi >= 3) {
+    $("#uv-0").addClass("bg-warning");
+  } else if (data.current.uvi >= 6) {
+    $("#uv-0").addClass("bg-danger");
+  } else {
+    console.log("uv index missing");
+  }
   for (var i = 0; i < 5; i++) {
     var date = new Date(data.daily[i].dt * 1000);
     $("#date-" + (i + 1)).text(date.toLocaleDateString("en-US"));
@@ -61,7 +72,6 @@ var makeBtn = function (city, load) {
   var duplicate = false;
   $(".history-button").each(function () {
     if (city == $(this).text().trim()) {
-      console.log("match");
       duplicate = true;
     }
   });
