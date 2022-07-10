@@ -22,7 +22,6 @@ var getGeo = function (city) {
     .then(function (response) {
       response.json().then(function (data) {
         if (data.length != 0) {
-          console.log(data);
           var city = data[0].name;
           getWeather(data[0].lat, data[0].lon, city);
         } else {
@@ -62,8 +61,8 @@ var displayWeather = function (data, city) {
   $("#wind-0").text(data.current.wind_speed + "MPH");
   $("#hum-0").text(data.current.humidity + "%");
   $("#uv-0").text(data.current.uvi);
-  $("#uv-0").removeClass("bg-success bg-danger bg-warning");
   //color codes uv index
+  $("#uv-0").removeClass("bg-success bg-danger bg-warning");
   if (data.current.uvi < 3) {
     $("#uv-0").addClass("bg-success");
   } else if (6 > data.current.uvi >= 3) {
